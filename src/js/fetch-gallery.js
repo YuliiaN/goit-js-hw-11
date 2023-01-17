@@ -9,14 +9,17 @@ export default class NewApiService {
     this.page = 1;
   }
 
-  fetchGallery() {
-    return axios
-      .get(
+  async fetchGallery() {
+    try {
+      const response = await axios.get(
         `${BASE_URL}/?key=${API_KEY}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&page=${this.page}&per_page=40`
-      )
-      .then(res => {
-        return res.data;
-      });
+      );
+      const data = response.data;
+
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   incrementPage() {
