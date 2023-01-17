@@ -32,7 +32,7 @@ async function onFormSubmit(e) {
     );
   } else {
     clearInnerHTML();
-    refs.galleryRef.innerHTML = renderGallery(data.hits);
+    refs.galleryRef.insertAdjacentHTML('beforeend', renderGallery(data.hits));
     api.incrementPage();
     lightbox.refresh();
 
@@ -57,7 +57,7 @@ function loadMore() {
       hideLoadMoreBtn();
       Notify.info(`We're sorry, but you've reached the end of search results.`);
     } else {
-      refs.galleryRef.innerHTML = renderGallery(data.hits);
+      refs.galleryRef.insertAdjacentHTML('beforeend', renderGallery(data.hits));
       api.incrementPage();
       lightbox.refresh();
       Notify.success(`Hooray! We found ${data.totalHits} images.`);
