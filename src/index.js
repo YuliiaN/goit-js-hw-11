@@ -1,47 +1,45 @@
 import { Notify } from 'notiflix';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 import NewApiService from './js/fetch-gallery';
+import { renderGallery } from './js/templates/render-gallery';
 
+const lightbox = new SimpleLightbox('.photo-card a');
 const refs = {
   formRef: document.querySelector('#search-form'),
   galleryRef: document.querySelector('.gallery'),
   loadMoreBtn: document.querySelector('.load-more'),
 };
 const api = new NewApiService();
-let images = []; // array of imgs for markup
 let totalAmount; // sum of all pictures
 let amountOfPages; // sum of all pages
 
 refs.formRef.addEventListener('submit', onFormSubmit);
 
-function onFormSubmit(e) {
+async function onFormSubmit(e) {
   e.preventDefault();
 
   api.query = e.currentTarget.elements.searchQuery.value;
   api.resetPage();
-  api
-    .fetchGallery()
-    .then(data => {
-      totalAmount = data.totalHits;
-      amountOfPages = data.totalHits / 40;
-      images = [];
+  const data = await api.fetchGallery();
+  totalAmount = data.totalHits;
+  amountOfPages = data.totalHits / 40;
 
-      if (!data.hits.length) {
-        Notify.failure(
-          'Sorry, there are no images matching your search query. Please try again.'
-        );
-      } else {
-        for (const image of data.hits) {
-          images.push(image);
-        }
-        clearInnerHTML();
-        renderGallery(images);
+  if (!data.hits.length) {
+    clearInnerHTML();
+    Notify.failure(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
+  } else {
+    clearInnerHTML();
+    refs.galleryRef.innerHTML = renderGallery(data.hits);
+    api.incrementPage();
+    lightbox.refresh();
 
-        if (amountOfPages > 1) {
-          showLoadMoreBtn();
-        }
-      }
-    })
-    .catch(console.log);
+    if (amountOfPages > 1) {
+      showLoadMoreBtn();
+    }
+  }
 }
 
 function showLoadMoreBtn() {
@@ -49,18 +47,79 @@ function showLoadMoreBtn() {
   refs.loadMoreBtn.addEventListener('click', loadMore);
 }
 
+function hideLoadMoreBtn() {
+  refs.loadMoreBtn.hidden = true;
+}
+
 function loadMore() {
   api.fetchGallery().then(data => {
-    for (const image of data.hits) {
-      images.push(image);
+    if (api.page * 40 >= data.totalHits) {
+      hideLoadMoreBtn();
+      Notify.info(`We're sorry, but you've reached the end of search results.`);
+    } else {
+      refs.galleryRef.innerHTML = renderGallery(data.hits);
+      api.incrementPage();
+      lightbox.refresh();
+      Notify.success(`Hooray! We found ${data.totalHits} images.`);
     }
-    renderGallery(images);
   });
 }
+
+// function renderGallery(arr) {
+//   const markup = arr
+//     .map(
+//       ({
+//         webformatURL,
+//         largeImageURL,
+//         tags,
+//         likes,
+//         views,
+//         comments,
+//         downloads,
+//       }) => `<div class="photo-card">
+//       <a href="${largeImageURL}">
+//       <img src="${webformatURL}" alt="${tags}" loading="lazy"/>
+//       </a>
+//   <div class="info">
+//       <p class="info-item"><b>Likes</b>
+//         ${likes}
+//       </p>
+//       <p class="info-item"><b>Views</b>
+//         ${views}
+//       </p>
+//       <p class="info-item"><b>Comments</b>
+//         ${comments}
+//       </p>
+//       <p class="info-item"><b>Downloads</b>
+//         ${downloads}
+//     </div>
+// </div>`
+//     )
+//     .join('');
+
+//   // refs.galleryRef.insertAdjacentHTML('beforeend', markup);
+// }
 
 function clearInnerHTML() {
   refs.galleryRef.innerHTML = '';
 }
+
+// function loadMore() {
+//   incrementPage();
+
+//   if (page === amountOfPages) {
+//     refs.galleryBtnRef.hidden = true;
+//   } else {
+//     fetchGallery(page)
+//       .then(resp => {
+//         for (const image of resp.hits) {
+//           images.push(image);
+//         }
+//         renderGallery(images);
+//       })
+//       .catch(console.log);
+//   }
+// }
 
 // function onFormSubmit(e) {
 //   e.preventDefault();
@@ -84,59 +143,4 @@ function clearInnerHTML() {
 //       }
 //     })
 //     .catch(console.log);
-// }
-
-function renderGallery(arr) {
-  const markup = arr
-    .map(
-      ({
-        webformatURL,
-        largeImageURL,
-        tags,
-        likes,
-        views,
-        comments,
-        downloads,
-      }) => `<div class="photo-card"><img src="${webformatURL}" alt="${tags}" loading="lazy"/>
-  <div class="info">
-      <p class="info-item"><b>Likes</b>
-        ${likes}
-      </p>
-      <p class="info-item"><b>Views</b>
-        ${views}
-      </p>
-      <p class="info-item"><b>Comments</b>
-        ${comments}
-      </p>
-      <p class="info-item"><b>Downloads</b>
-        ${downloads}  
-    </div>
-</div>`
-    )
-    .join('');
-
-  refs.galleryRef.insertAdjacentHTML('beforeend', markup);
-
-  //   if (images.length === totalAmount) {
-  //     return;
-  //   } else {
-  //     refs.galleryBtnRef.hidden = false;
-  //   }
-}
-
-// function loadMore() {
-//   incrementPage();
-
-//   if (page === amountOfPages) {
-//     refs.galleryBtnRef.hidden = true;
-//   } else {
-//     fetchGallery(page)
-//       .then(resp => {
-//         for (const image of resp.hits) {
-//           images.push(image);
-//         }
-//         renderGallery(images);
-//       })
-//       .catch(console.log);
-//   }
 // }

@@ -74,10 +74,13 @@ input {
 
 // cards
 
+.gallery-container {
+  text-align: center;
+}
+
 .gallery {
   padding-top: 20px;
   padding-bottom: 20px;
-  margin: 0 auto;
 
   display: flex;
   flex-wrap: wrap;
