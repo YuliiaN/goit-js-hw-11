@@ -32,7 +32,7 @@ async function onFormSubmit(e) {
     );
   } else {
     clearInnerHTML();
-    refs.galleryRef.insertAdjacentHTML('beforeend', renderGallery(data.hits));
+    refs.galleryRef.innerHTML = renderGallery(data.hits);
     api.incrementPage();
     lightbox.refresh();
 
