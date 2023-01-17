@@ -38,20 +38,3 @@ export default class NewApiService {
     this.searchQuery = newQuery;
   }
 }
-
-// export function fetchGallery(page = 1) {
-//   const BASE_URL = 'https://pixabay.com/api';
-//   const API_KEY = '32896163-5a08927168932cddf0e5a890d';
-
-//   return fetch(
-//     `${BASE_URL}/?key=${API_KEY}&q=${}&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=20`
-//   )
-//     .then(resp => {
-//       if (!resp.ok) {
-//         throw new Error(resp.statusText);
-//       } else {
-//         return resp.json();
-//       }
-//     })
-//     .catch(console.log);
-// }

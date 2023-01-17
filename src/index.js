@@ -36,6 +36,7 @@ async function onFormSubmit(e) {
     api.incrementPage();
     lightbox.refresh();
 
+    console.log(amountOfPages);
     if (amountOfPages > 1) {
       showLoadMoreBtn();
     }
@@ -68,44 +69,3 @@ function loadMore() {
 function clearInnerHTML() {
   refs.galleryRef.innerHTML = '';
 }
-
-// function loadMore() {
-//   incrementPage();
-
-//   if (page === amountOfPages) {
-//     refs.galleryBtnRef.hidden = true;
-//   } else {
-//     fetchGallery(page)
-//       .then(resp => {
-//         for (const image of resp.hits) {
-//           images.push(image);
-//         }
-//         renderGallery(images);
-//       })
-//       .catch(console.log);
-//   }
-// }
-
-// function onFormSubmit(e) {
-//   e.preventDefault();
-//   resetPage();
-//   refs.galleryListRef.innerHTML = '';
-
-//   fetchGallery(page)
-//     .then(resp => {
-//       totalAmount = resp.total;
-//       amountOfPages = resp.total / 20;
-
-//       if (!resp.hits.length) {
-//         Notify.failure(
-//           'Sorry, there are no images matching your search query. Please try again.'
-//         );
-//       } else {
-//         for (const image of resp.hits) {
-//           images.push(image);
-//         }
-//         renderGallery(images);
-//       }
-//     })
-//     .catch(console.log);
-// }
