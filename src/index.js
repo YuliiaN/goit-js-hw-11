@@ -61,6 +61,14 @@ function loadMore() {
       refs.galleryRef.insertAdjacentHTML('beforeend', renderGallery(data.hits));
       api.incrementPage();
       lightbox.refresh();
+
+      const { height: cardHeight } =
+        refs.galleryRef.firstElementChild.getBoundingClientRect();
+      window.scrollBy({
+        top: cardHeight * 2,
+        behavior: 'smooth',
+      }); // smooth scroll
+
       Notify.success(`Hooray! We found ${data.totalHits} images.`);
     }
   });
